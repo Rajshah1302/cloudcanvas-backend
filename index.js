@@ -1,19 +1,24 @@
 const connectToMongo = require("./db");
-const express = require('express')
-const app = express()
-const port = 3000
+const express = require('express');
+
+// Creating an instance of Express
+const app = express();
+const port = 3000;
 connectToMongo();
 
+// Using JSON middleware for parsing requests
 app.use(express.json());
 
-//Available Routes 
+// Setting up the root route
 app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+  res.send('Hello World!');
+});
 
-app.use('/api/auth',require('./routes/auth'));
-app.use('/api/notes',require('./routes/notes'));
+// Setting up routes for authentication and notes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/notes', require('./routes/notes'));
 
+// Starting the server and listening on the specified port
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+  console.log(`Example app listening on port ${port}`);
+});
