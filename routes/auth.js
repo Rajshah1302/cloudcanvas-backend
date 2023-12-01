@@ -52,4 +52,38 @@ router.post('/createuser', [
   }
 });
 
+// Authenticate User using: POST "api/auth/login".
+router.post('/login', [
+  // Validation 
+  body('email', 'Invalid Email').isEmail().exists(),
+  body('password', 'Invalid Password').exists(),
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    // If there are validation errors, return a 400 Bad Request with the error details
+    return res.status(400).json({ errors: errors.array() });
+  }
+  try {
+    let user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return res.status(409).json({ error: 'Authentication failed' });
+    }
+
+    const passwordCompare = await bcrypt.compare(req.body.password, user.password);
+    if (!passwordCompare) {
+      return res.status(409).json({ error: 'Authentication failed' });
+    }
+
+    // Generate a JWT token for the user
+    const token = jwt.sign({ user: { id: user.id } }, JWT_SECRET);
+
+    // Send the created user along with the token as a JSON response
+    res.json({ token });
+  } catch (error) {
+    // Handle errors, log them, and send an appropriate response
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 module.exports = router;
