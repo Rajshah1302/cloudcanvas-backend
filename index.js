@@ -3,7 +3,7 @@ const express = require('express');
 
 // Creating an instance of Express
 const app = express();
-const port = 3000;
+const port = 2000;
 connectToMongo();
 
 // Using JSON middleware for parsing requests
