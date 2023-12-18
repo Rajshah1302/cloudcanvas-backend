@@ -89,5 +89,38 @@ router.put('api/notes/updateNote/:id', fetchUser, async (req, res) => {
     }
 });
 
+// ROUTE4: Delete Notes: DELETE "api/notes/deleteNote/:id". Login Required
+router.delete('/deleteNote/:id', fetchUser, async (req, res) => {
+    try {
+        // Find the note to be delete
+        let note = await Note.findById(req.params.id);
+
+        if (!note) {
+            return res.status(404).send("Note not found");
+        }
+
+        // Check if the authenticated user is the owner of the note
+        if (note.user.toString() !== req.user.id) {
+            return res.status(401).send("Restricted");
+        }
+
+        // Delete the note and retrieve the updated note
+        const deletedNote = await Note.findByIdAndDelete(req.params.id);
+
+        if (!deletedNote) {
+            // If the note was not deleted for some reason
+            return res.status(500).json({ error: "Failed to delete the note" });
+        }
+
+        // Send success message in the response
+        res.json({ success: "Note deleted successfully" });
+    } catch (error) {
+        // Handle errors, log them, and send an appropriate response
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
 
 module.exports = router;
