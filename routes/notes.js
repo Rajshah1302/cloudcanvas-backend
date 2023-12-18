@@ -54,5 +54,40 @@ router.post('/addNotes', fetchUser, [
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+// ROUTE3: Update Notes: PUT "api/notes/updateNote/:id". Login Required
+router.put('api/notes/updateNote/:id', fetchUser, async (req, res) => {
+    try {
+        const { title, description, tag } = req.body;
+
+        // Create a new note object with updated fields
+        const updatedNote = {};
+        if (title) { updatedNote.title = title; }
+        if (description) { updatedNote.description = description; }
+        if (tag) { updatedNote.tag = tag; }
+
+        // Find the note to be updated
+        let note = await Note.findById(req.params.id);
+
+        if (!note) {
+            return res.status(404).send("Note not found");
+        }
+
+        // Check if the authenticated user is the owner of the note
+        if (note.user.toString() !== req.user.id) {
+            return res.status(401).send("Restricted");
+        }
+
+        // Update the note and retrieve the updated note
+        note = await Note.findByIdAndUpdate(req.params.id, { $set: updatedNote }, { new: true });
+
+        // Send the updated note in the response
+        res.json({ note });
+    } catch (error) {
+        // Handle errors, log them, and send an appropriate response
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 module.exports = router;
