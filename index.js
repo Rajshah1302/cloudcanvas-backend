@@ -20,5 +20,5 @@ app.use('/api/notes', require('./routes/notes'));
 
 // Starting the server and listening on the specified port
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`CloudCanvas Backend listening on port ${port}`);
 });
