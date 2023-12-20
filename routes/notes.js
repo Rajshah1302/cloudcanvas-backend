@@ -55,7 +55,7 @@ router.post('/addNotes', fetchUser, [
     }
 });
 // ROUTE3: Update Notes: PUT "api/notes/updateNote/:id". Login Required
-router.put('api/notes/updateNote/:id', fetchUser, async (req, res) => {
+router.put('/updateNote/:id', fetchUser, async (req, res) => {
     try {
         const { title, description, tag } = req.body;
 
